@@ -16,15 +16,21 @@ class MealViewController: UIViewController, UITextFieldDelegate,
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var ratingControl: RatingControl!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+
+    
+    var meal = Meal?()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Handel user's Text field input through delegate callbacks.
+        //self references the ViewController classs that we are in and assigned at the delegate
         
         nameTextField.delegate = self
         
-        //self references the ViewController classs that we are in and assigned at the delegate
+       checkValidMealName()
+        
     }
     
     //MARK: UITextFieldDelegate
@@ -38,7 +44,22 @@ class MealViewController: UIViewController, UITextFieldDelegate,
         return true
     }
     
+    func textFieldDidBeginEditing(textField: UITextField) {
+        
+        saveButton.enabled = false
+    }
+    
+    func checkValidMealName(){
+        
+        let text = nameTextField.text ?? ""
+        
+        saveButton.enabled = !text.isEmpty
+    }
+    
     func textFieldDidEndEditing(textField: UITextField) {
+        
+        checkValidMealName()
+        navigationItem.title = textField.text
         
     }
     
@@ -57,6 +78,23 @@ class MealViewController: UIViewController, UITextFieldDelegate,
         photoImageView.image = selectedImage
         
         dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    //MARK:Navigation
+    
+    @IBAction func cancleButton(sender: AnyObject) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if saveButton === sender{
+            
+            let name = nameTextField.text ?? ""
+            let photo = photoImageView.image
+            let rating = ratingControl.rating
+            
+            meal = Meal(name: name, photo: photo, rating: rating)
+        }
     }
     
     //MARK: Action
